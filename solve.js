@@ -21,6 +21,11 @@ catch(e) {
 
 try {
     input = fs.readFileSync(inputFile).toString().split('\n');
+    // remove last empty line
+    if (!input[input.length-1]) {
+        input.pop();
+    }
+
 }
 catch(e) {
     console.error(`Input file not found: ${inputFile}`);
