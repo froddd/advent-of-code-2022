@@ -7,11 +7,11 @@ const addUpCalories = (input) => input.reduce((elves, calories) => {
     return elves
 }, [0])
 
-const maxCalories = (input) => Math.max(...addUpCalories(input))
+const part1 = (input) => Math.max(...addUpCalories(input))
 
-const top3MaxCalories = (input) => addUpCalories(input).sort((a, b) => b - a).slice(0, 3).reduce((sum, x) => sum + x, 0)
+const part2 = (input) => addUpCalories(input).sort((a, b) => b - a).slice(0, 3).reduce((sum, x) => sum + x, 0)
 
 module.exports = {
-    part1: maxCalories,
-    part2: top3MaxCalories
+    part1,
+    part2
 }
