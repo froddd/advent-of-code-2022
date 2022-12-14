@@ -36,7 +36,14 @@ const part1 = input => {
     return Object.values(directories).filter(x => x <= 100000).reduce((total, x) => total + x, 0);
 }
 
-const part2 = input => {}
+const part2 = input => {
+    const directories = getDirectorySizes(input);
+
+    const unused = 70000000 - directories['/'];
+    const minDeleteSize = 30000000 - unused;
+
+    return Math.min(...Object.values(directories).filter(x => x >= minDeleteSize));
+}
 
 module.exports = {
     part1,
