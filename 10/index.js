@@ -23,7 +23,37 @@ const part1 = input => {
     return signalStrength
 }
 
-const part2 = input => {}
+const part2 = input => {
+    let cycle = 0
+    let spritePosition = 0
+    let output = ''
+
+    const drawPixel = () => {
+        const currentPixel = cycle % 40
+
+        if (currentPixel > spritePosition && currentPixel < spritePosition + 4) {
+            output += '##'
+        } else {
+            output += '  '
+        }
+        if (cycle % 40 === 0) {
+            output += '\n'
+        }
+    }
+
+    input.forEach(line => {
+        cycle += 1
+        drawPixel()
+
+        if (!line.startsWith('noop')) {
+            cycle += 1
+            drawPixel()
+            spritePosition += Number(line.split(' ')[1])
+        }
+    })
+
+    return output
+}
 
 module.exports = {
     part1,
