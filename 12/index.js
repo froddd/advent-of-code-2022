@@ -1,7 +1,7 @@
-const part1 = input => {
-    const startLine = input.find(line => line.split('').find(char => char === 'S'))
-    const startY = input.indexOf(startLine)
-    const startX = startLine.indexOf('S')
+const findPaths = (map, startLetter, endLetter) => {
+    const startLine = map.find(line => line.split('').find(char => char === startLetter))
+    const startY = map.indexOf(startLine)
+    const startX = startLine.indexOf(startLetter)
 
     const startNode = { x: startX, y: startY, path: [] }
 
@@ -17,15 +17,15 @@ const part1 = input => {
 
         return [u, l, d, r]
             // node exists in map
-            .filter(node => input[node.y] && input[node.y][node.x])
-            // node is valid, i.e. at most one higher than current, or is the last node
+            .filter(node => map[node.y] && map[node.y][node.x])
+            // node is valid, i.e. at least one lower than current, or is the last node
             .filter(node => {
-                let currentNodeLetter = input[currentNode.y][currentNode.x]
-                if (currentNodeLetter === 'S') currentNodeLetter = 'a'
-                let targetNodeLetter = input[node.y][node.x]
-                if (targetNodeLetter === 'E') targetNodeLetter = 'z'
+                let currentNodeLetter = map[currentNode.y][currentNode.x]
+                if (currentNodeLetter === 'E') currentNodeLetter = 'z'
+                let targetNodeLetter = map[node.y][node.x]
+                if (targetNodeLetter === 'S') targetNodeLetter = 'a'
 
-                return targetNodeLetter.charCodeAt(0) <= currentNodeLetter.charCodeAt(0) + 1
+                return targetNodeLetter.charCodeAt(0) >= currentNodeLetter.charCodeAt(0) - 1
             })
             // Add existing path to keep track
             .map(node => ({...node, path: [...path, `${node.x},${node.y}`]}))
@@ -35,7 +35,7 @@ const part1 = input => {
         const currentNode = queue.shift()
 
         if (!visited.includes(`${currentNode.x},${currentNode.y}`)) {
-            if (input[currentNode.y][currentNode.x] === 'E') {
+            if (map[currentNode.y][currentNode.x] === endLetter) {
                 possiblePaths.push(currentNode.path)
             }
 
@@ -49,39 +49,49 @@ const part1 = input => {
         }
     }
 
+    return possiblePaths
+}
+
+const part1 = input => {
+    const possiblePaths = findPaths(input, 'E', 'S')
+
     const shortestLength = possiblePaths[0].length
 
-    const renderPath = () => {
-        possiblePaths.forEach((path, index) => {
-            let output = `== PATH ${index + 1} (${path.length}) ==\n`
-            let grid = Array(input.length).fill('.').map(line => Array(startLine.length).fill('.'))
-            path.unshift(`${startX},${startY}`);
-            path.forEach((step, index) => {
-                const [x, y] = step.split(',')
-                if (path[index+1]) {
-                    const [nextX, nextY] =  path[index+1].split(',').map(x => Number(x))
-                    let direction = '?'
-                    if (nextX > x) direction = '>'
-                    if (nextX < x) direction = '<'
-                    if (nextY > y) direction = 'V'
-                    if (nextY < y) direction = '^'
-                    grid[y][x] = direction
-                } else {
-                    grid[y][x] = 'E'
-                }
-            })
+    // const renderPath = () => {
+    //     possiblePaths.forEach((path, index) => {
+    //         let output = `== PATH ${index + 1} (${path.length}) ==\n`
+    //         let grid = Array(input.length).fill('.').map(line => Array(startLine.length).fill('.'))
+    //         path.unshift(`${startX},${startY}`);
+    //         path.forEach((step, index) => {
+    //             const [x, y] = step.split(',')
+    //             if (path[index+1]) {
+    //                 const [nextX, nextY] =  path[index+1].split(',').map(x => Number(x))
+    //                 let direction = '?'
+    //                 if (nextX > x) direction = '>'
+    //                 if (nextX < x) direction = '<'
+    //                 if (nextY > y) direction = 'V'
+    //                 if (nextY < y) direction = '^'
+    //                 grid[y][x] = direction
+    //             } else {
+    //                 grid[y][x] = 'E'
+    //             }
+    //         })
+    //
+    //         output += grid.map(line => line.join('')).join('\n')
+    //         console.log(output);
+    //     })
+    // }
 
-            output += grid.map(line => line.join('')).join('\n')
-            console.log(output);
-        })
-    }
-
-    renderPath()
+    // renderPath()
 
     return shortestLength
 }
 
-const part2 = input => {}
+const part2 = input => {
+    const possiblePaths = findPaths(input, 'E', 'a')
+
+    return possiblePaths.sort((a,b) => a - b)[0].length
+}
 
 module.exports = {
     part1,
