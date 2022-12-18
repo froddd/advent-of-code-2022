@@ -1,7 +1,36 @@
-const findPaths = (map, startLetter, endLetter) => {
-    const startLine = map.find(line => line.split('').find(char => char === startLetter))
-    const startY = map.indexOf(startLine)
+const getStart = (input, startLetter) => {
+    const startLine = input.find(line => line.split('').find(char => char === startLetter))
+    const startY = input.indexOf(startLine)
     const startX = startLine.indexOf(startLetter)
+
+    return [startX, startY]
+}
+
+const renderPath = (path, map, startX, startY) => {
+    let output = ``
+    let grid = Array(map.length).fill('.').map(line => Array(map[0].length).fill('.'))
+    path.reverse().unshift(`${startX},${startY}`);
+    path.forEach((step, index) => {
+        const [x, y] = step.split(',')
+        if (path[index+1]) {
+            const [nextX, nextY] =  path[index+1].split(',').map(x => Number(x))
+            let direction = '?'
+            if (nextX > x) direction = '>'
+            if (nextX < x) direction = '<'
+            if (nextY > y) direction = 'V'
+            if (nextY < y) direction = '^'
+            grid[y][x] = direction
+        } else {
+            grid[y][x] = 'E'
+        }
+    })
+
+    output += grid.map(line => line.join('')).join('\n')
+    console.log(output)
+}
+
+const findPaths = (map, startLetter, endLetter) => {
+    const [startX, startY] = getStart(map, startLetter)
 
     const startNode = { x: startX, y: startY, path: [] }
 
@@ -55,42 +84,24 @@ const findPaths = (map, startLetter, endLetter) => {
 const part1 = input => {
     const possiblePaths = findPaths(input, 'E', 'S')
 
-    const shortestLength = possiblePaths[0].length
+    const distance = possiblePaths[0].length
 
-    // const renderPath = () => {
-    //     possiblePaths.forEach((path, index) => {
-    //         let output = `== PATH ${index + 1} (${path.length}) ==\n`
-    //         let grid = Array(input.length).fill('.').map(line => Array(startLine.length).fill('.'))
-    //         path.unshift(`${startX},${startY}`);
-    //         path.forEach((step, index) => {
-    //             const [x, y] = step.split(',')
-    //             if (path[index+1]) {
-    //                 const [nextX, nextY] =  path[index+1].split(',').map(x => Number(x))
-    //                 let direction = '?'
-    //                 if (nextX > x) direction = '>'
-    //                 if (nextX < x) direction = '<'
-    //                 if (nextY > y) direction = 'V'
-    //                 if (nextY < y) direction = '^'
-    //                 grid[y][x] = direction
-    //             } else {
-    //                 grid[y][x] = 'E'
-    //             }
-    //         })
-    //
-    //         output += grid.map(line => line.join('')).join('\n')
-    //         console.log(output);
-    //     })
-    // }
+    const [startX, startY] = getStart(input, 'E')
+    renderPath(possiblePaths[0], input, startX, startY)
 
-    // renderPath()
-
-    return shortestLength
+    return distance
 }
 
 const part2 = input => {
     const possiblePaths = findPaths(input, 'E', 'a')
 
-    return possiblePaths.sort((a,b) => a - b)[0].length
+    const shortestPath = possiblePaths.sort((a,b) => a - b)[0]
+    const distance = shortestPath.length
+
+    const [startX, startY] = getStart(input, 'E')
+    renderPath(shortestPath, input, startX, startY)
+
+    return distance
 }
 
 module.exports = {
